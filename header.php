@@ -4,7 +4,7 @@ require_once( dirname(__FILE__) . '/functions.php' ); ?>
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>Railroad - <?= $page_title ?></title>
+	<title>Weekly Bounty - <?= $page_title ?></title>
 	<meta name="description" content="<?= $page_lead ?>">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -15,7 +15,10 @@ require_once( dirname(__FILE__) . '/functions.php' ); ?>
 
 <header id="masthead" class="">
 	<nav class="navbar navbar-expand-md navbar-dark bg-info box-shadow">
-	  <a class="navbar-brand" href="/">Railroad</a>
+	  <a class="navbar-brand" href="/">
+	  	<img src="harvest.svg" width="30" height="30" class="d-inline-block align-top" alt="harvest horn of plenty"> 
+	  	Weekly Bounty
+	  </a>
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 	    <span class="navbar-toggler-icon"></span>
 	  </button>
