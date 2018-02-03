@@ -3,7 +3,7 @@
 require_once( dirname(__FILE__) . '/vendor/autoload.php' );
 
 // load required config variables
-$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv = new Dotenv\Dotenv(__DIR__, 'config.env');
 $dotenv->load();
 $dotenv->required('LOGIN_EMAIL')->notEmpty();
 $dotenv->required('LOGIN_PASSWORD')->notEmpty();
@@ -21,6 +21,7 @@ $user_id = getenv('USER_ID');
 $daily_target = getenv('DAILY_TARGET');
 $time_zone = getenv('TIME_ZONE');
 $dashboard_url = "https://$login_slug.harvestapp.com/";
+
 
 /**
  * HaPi - PHP wrapper library for the Harvest API
