@@ -20,52 +20,85 @@ require_once( dirname(__FILE__) . '/header.php' ); ?>
 	</div><!-- .row -->
 </div><!-- .container -->
 
+<!-- <code> -->
+<?php 
+// date vars
+// date_default_timezone_set($time_zone);
+$today = strtotime('now');
+$weekdays_so_far = date('w');
+$day_of_year = date('z');
+$year = date('Y', time());
+
+// create day of year array for Harvest
+$days_in_week = array();
+for ($x = 0; $x < $weekdays_so_far; $x++) {
+	$this_day_of_year = $day_of_year-$x;
+	$days_in_week[] = $this_day_of_year;
+	// echo '<pre>This Day: ' . $this_day_of_year . '<br>x: ' . $x . '</pre>';
+}
+$days_in_week = array_reverse($days_in_week);
+?>
+
+<?php 
+	// echo '<pre>';
+	// echo 'Timezone: ' . $time_zone . '<br>';
+	// echo 'Today: ' . date('D', $today) . ' (' . date('z', $today) . ')<br>';
+	// $today_harvest_format = date('D, d M Y', $today);
+	// echo strtotime($today_harvest_format) . ' | ' . $today . '<br>';
+	// echo 'Year: ' . $year . '<br>';
+	// echo 'Weekdays so far: ';
+	// var_dump($days_in_week);
+	// echo '</pre>';
+
+	// echo '<pre>';
+	// foreach( $days_in_week as $day ) {
+	// 	echo $day . '<br>';
+	// }
+	// echo '</pre>';
+?>
+<!-- </code> -->
+
 <div class="bg-light border-bottom border-top py-5">
 	<div class="container">
 		<div class="row row-eq-height">
 
 			<?php 
-			// date vars
-			date_default_timezone_set($time_zone);
-			$today = date();
-			$weekdays_so_far = date('w', strtotime($today));
-			$day_of_year = date('z');
-			$year = date('Y');
-
-			// create day of year array for Harvest
-			$days_in_week = array();
-			for ($x = 0; $x <= $weekdays_so_far; $x++) {
-				$this_day_of_year = $day_of_year-$x;
-				$days_in_week[] = $this_day_of_year;
-			}
-			$days_in_week = array_reverse($days_in_week);
-
 			$weekly_total = 0;
-
+			$days_in_week_total = 0;
 			foreach( $days_in_week as $day ) :
+
 				$result = $api->getDailyActivity( $day, $year );
 				if( $result->isSuccess() ) :
-					$entry_label = date( 'D', strtotime($result->data->forDay) );
-					// tally daily activity
-					$daily_total = 0;
-				  foreach( $result->data->dayEntries as $entry ) $daily_total += $entry->get( 'hours' );
-				  $add_class = ( $daily_total >= $daily_target ) ? ' text-success' : 'text-warning';
-					?>
-					<section class="col-sm my-2">
-						<div class="text-center card">
-							<header class="card-header">
-							  <h1 class="text-uppercase text-dark m-0 h3" data-day="<?= $result->data->forDay ?>"><?= $entry_label ?></h1>
-							</header>
-						  <div class="card-body">
-						  	<p class="">
-							  	<span class="display-4 <?= $add_class ?>"><?= $daily_total ?></span> 
-						  		<small class="text-secondary d-none d-lg-inline">hrs</small>
-						  	</p>
-					  	</div>
-					  </div>
-				  </section>
-				<?php
-				endif;
+					$entry_timestamp = strtotime($result->data->forDay);
+					$entry_label = date( 'D', $entry_timestamp );
+					if( !in_array( $entry_label, array('Sat', 'Sun') ) ) :
+
+						// tally weekly/daily activity
+						$days_in_week_total++;
+						$daily_total = 0;
+					  foreach( $result->data->dayEntries as $entry ) 
+					  	$daily_total += $entry->get( 'hours' );
+
+					  // calculate class based on $daily_target
+					  $add_class = ( $daily_total >= $daily_target ) ? 'success' : 'warning';
+						?>
+						<section class="col-sm my-2">
+							<div class="text-center card">
+								<header class="card-header">
+								  <h1 class="text-uppercase text-dark m-0 h3" data-date="<?= $result->data->forDay ?>" data-day="<?= $day ?>"><?= $entry_label ?></h1>
+								</header>
+							  <div class="card-body">
+							  	<p class="">
+								  	<span class="display-4 text-<?= $add_class ?>"><?= $daily_total ?></span> 
+							  		<small class="text-secondary d-none d-lg-inline">hrs</small>
+							  	</p>
+						  	</div>
+						  </div>
+					  </section>
+						<?php
+
+					endif; // is weekday
+				endif; // $result->isSuccess
 
 				// tally weekly total
 				$weekly_total += $daily_total;
@@ -98,7 +131,7 @@ require_once( dirname(__FILE__) . '/header.php' ); ?>
 				</header>
 				<div class="card-body">
 					<?php 
-					$weekly_average = $weekly_total / count($days_in_week);
+					$weekly_average = round( ($weekly_total / $days_in_week_total), 2 );
 					$add_class = ( $weekly_average >= $daily_target ) ? ' text-success' : ' text-warning';
 					?>
 					<span class="display-3 <?= $add_class ?>"><?= $weekly_average ?></span> 
@@ -113,19 +146,22 @@ require_once( dirname(__FILE__) . '/header.php' ); ?>
 <div class="container pb-5">
 	<div class="row">
 		<div class="col-sm text-center">
-			<?php if( $weekly_average >= ($daily_target / 2) ) : ?>
-				<div class="alert alert-warning" role="alert">
-				  <h5 class="alert-heading m-0">Keep at it, you can do better!</h5>
-				</div>
-			<?php elseif( $weekly_average >= $daily_target ) : ?>
-				<div class="alert alert-success" role="alert">
-				  <h5 class="alert-heading m-0">Keep up the good work!</h5>
-				</div>
-			<?php else : ?>
-				<div class="alert alert-danger" role="alert">
-				  <h5 class="alert-heading m-0">Work harder!</h5>
-				</div>
-			<?php endif; ?>
+			<?php 
+			// calculate alert based on $daily_target
+			$daily_target_third = $daily_target / 3;
+			if( $weekly_average <= $daily_target_third ) {
+				$alert_class = 'danger';
+				$alert_text  = 'Work harder!';
+			} elseif( $weekly_average <= ($daily_target_third * 2) ) { 
+				$alert_class = 'warning';
+				$alert_text  = 'Keep working, you can do better!';
+			} else {
+				$alert_class = 'success';
+				$alert_text  = 'Good work, keep it up!';
+			} ?>
+			<div class="alert alert-<?= $alert_class ?>" role="alert">
+			  <h5 class="alert-heading m-0"><?= $alert_text ?></h5>
+			</div>
 		</div><!-- .col -->
 	</div><!-- .row -->
 </div><!-- .container -->
