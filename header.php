@@ -17,6 +17,15 @@ require_once( dirname(__FILE__) . '/functions.php' ); ?>
 		.navbar-brand:hover img {
 			transform: rotate(180deg);
 		}
+		.card-header .date__month {
+			font-size: 0.4em;
+			line-height: 1;
+		}
+		.card-header .date__day {
+			font-size: 0.7em;
+			line-height: 1;
+			font-weight: 300;
+		}
 	</style>
 </head>
 <body>

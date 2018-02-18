@@ -54,7 +54,8 @@ $page_lead = ($page_lead) ? $page_lead : 'Stay on track with your billable hours
 
 // nav menu items  $page_title => $page_slug
 $nav_items = array(
-	'This Week' => '/',
+	'This Week' => '/', 
+	'Last Week' => '/last-week.php',
 	'Today' => '/today.php', 
 ); 
 ?>
